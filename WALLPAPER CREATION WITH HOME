@@ -1,0 +1,152 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Responsive UI",
+      home: const HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String selectedPage = "Homepage";
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Responsive UI"),
+        backgroundColor: Colors.blue,
+      ),
+
+      // Home Screen Menu
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const UserAccountsDrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              accountName: Text(
+                "Gowtham",
+                style: TextStyle(fontSize: 18),
+              ),
+              accountEmail: Text(
+                "gowtham@gmail.com",
+              ),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.person,
+                  size: 40,
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+
+            // HOME
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text("Home"),
+              onTap: () {
+                setState(() {
+                  selectedPage = "Homepage";
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+
+            // PROFILE
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text("Profile"),
+              onTap: () {
+                setState(() {
+                  selectedPage = "Profile";
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+
+            // FEEDBACK
+            ListTile(
+              leading: const Icon(Icons.feedback),
+              title: const Text("Feedback"),
+              onTap: () {
+                setState(() {
+                  selectedPage = "Feedback";
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+
+            // ABOUT
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text("About"),
+              onTap: () {
+                setState(() {
+                  selectedPage = "About";
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(
+              "https://picsum.photos/800/1200",
+            ),
+            fit: BoxFit.cover,
+          ),
+        ),
+
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            color: Colors.black54,
+
+            child: Text(
+              selectedPage,
+              style: const TextStyle(
+                fontSize: 25,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
