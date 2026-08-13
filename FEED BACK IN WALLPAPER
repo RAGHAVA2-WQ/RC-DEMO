@@ -1,0 +1,240 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Responsive UI",
+      home: const HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String selectedPage = "Homepage";
+
+  // Controller for feedback text field
+  final TextEditingController feedbackController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    feedbackController.dispose();
+    super.dispose();
+  }
+
+  void submitFeedback() {
+    if (feedbackController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter your feedback"),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Feedback Submitted"),
+        ),
+      );
+
+      feedbackController.clear();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Responsive UI"),
+        backgroundColor: Colors.blue,
+      ),
+
+      // Drawer Menu
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const UserAccountsDrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              accountName: Text(
+                "Gowtham",
+                style: TextStyle(fontSize: 18),
+              ),
+              accountEmail: Text(
+                "gowtham@gmail.com",
+              ),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.person,
+                  size: 40,
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+
+            // HOME
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text("Home"),
+              onTap: () {
+                setState(() {
+                  selectedPage = "Homepage";
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+
+            // PROFILE
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text("Profile"),
+              onTap: () {
+                setState(() {
+                  selectedPage = "Profile";
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+
+            // FEEDBACK
+            ListTile(
+              leading: const Icon(Icons.feedback),
+              title: const Text("Feedback"),
+              onTap: () {
+                setState(() {
+                  selectedPage = "Feedback";
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+
+            // ABOUT
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text("About"),
+              onTap: () {
+                setState(() {
+                  selectedPage = "About";
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+
+      // Body
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(
+              "https://picsum.photos/800/1200",
+            ),
+            fit: BoxFit.cover,
+          ),
+        ),
+
+        child: Center(
+          child: selectedPage == "Feedback"
+              ? Container(
+                  width: 350,
+                  padding: const EdgeInsets.all(20),
+                  color: Colors.black54,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Feedback",
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Feedback Text Field
+                      TextField(
+                        controller: feedbackController,
+                        maxLines: 5,
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: "Enter your feedback",
+                          hintStyle: const TextStyle(
+                            color: Colors.white70,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white24,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Submit Button
+                      ElevatedButton(
+                        onPressed: submitFeedback,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 12,
+                          ),
+                        ),
+                        child: const Text(
+                          "Submit",
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  padding: const EdgeInsets.all(20),
+                  color: Colors.black54,
+                  child: Text(
+                    selectedPage,
+                    style: const TextStyle(
+                      fontSize: 25,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}
