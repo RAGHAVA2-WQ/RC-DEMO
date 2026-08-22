@@ -1,0 +1,390 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+// ================= MAIN APP =================
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Food Ordering App',
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+      ),
+      home: const FoodHomePage(),
+    );
+  }
+}
+
+// ================= HOME PAGE =================
+
+class FoodHomePage extends StatefulWidget {
+  const FoodHomePage({super.key});
+
+  @override
+  State<FoodHomePage> createState() => _FoodHomePageState();
+}
+
+class _FoodHomePageState extends State<FoodHomePage> {
+  // Text editing controller
+  final TextEditingController searchController =
+      TextEditingController();
+
+  // Search text
+  String searchText = '';
+
+  // Food list
+  final List<Map<String, dynamic>> foods = [
+    {
+      'icon': Icons.local_pizza,
+      'name': 'Pizza',
+      'price': 199.0,
+    },
+    {
+      'icon': Icons.lunch_dining,
+      'name': 'Burger',
+      'price': 149.0,
+    },
+    {
+      'icon': Icons.rice_bowl,
+      'name': 'Biryani',
+      'price': 249.0,
+    },
+    {
+      'icon': Icons.local_cafe,
+      'name': 'Coffee',
+      'price': 99.0,
+    },
+    {
+      'icon': Icons.icecream,
+      'name': 'Ice Cream',
+      'price': 120.0,
+    },
+  ];
+
+  // ================= SEARCH FOOD =================
+
+  List<Map<String, dynamic>> get filteredFoods {
+    return foods.where((food) {
+      return food['name']
+          .toString()
+          .toLowerCase()
+          .contains(searchText.toLowerCase());
+    }).toList();
+  }
+
+  // ================= DISPOSE =================
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  // ================= BUILD =================
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // ================= APP BAR =================
+
+      appBar: AppBar(
+        title: const Text(
+          'Food Ordering App',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.orange,
+        centerTitle: true,
+
+        // Cart Icon
+        actions: [
+          IconButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Cart is empty'),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.shopping_cart,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+
+      // ================= BODY =================
+
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+
+        child: Column(
+          children: [
+            // ================= WELCOME TEXT =================
+
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Welcome!',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 5),
+
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'What would you like to eat?',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            // ================= TEXT EDITING / SEARCH =================
+
+            TextField(
+              controller: searchController,
+
+              onChanged: (value) {
+                setState(() {
+                  searchText = value;
+                });
+              },
+
+              decoration: InputDecoration(
+                labelText: 'Search Food',
+                hintText: 'Enter food name',
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Colors.orange,
+                ),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    searchController.clear();
+
+                    setState(() {
+                      searchText = '';
+                    });
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: Colors.orange,
+                    width: 2,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            // ================= CATEGORY TITLE =================
+
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Popular Foods',
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // ================= FOOD LIST =================
+
+            Expanded(
+              child: filteredFoods.isEmpty
+                  ? const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 60,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            'No food found',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredFoods.length,
+                      itemBuilder: (context, index) {
+                        final food = filteredFoods[index];
+
+                        return FoodCard(
+                          foodIcon: food['icon'],
+                          foodName: food['name'],
+                          price: food['price'],
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+
+      // ================= FLOATING BUTTON =================
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.orange,
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Order button clicked!'),
+            ),
+          );
+        },
+        child: const Icon(
+          Icons.shopping_cart,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+// ================= CUSTOM FOOD CARD =================
+
+class FoodCard extends StatelessWidget {
+  final IconData foodIcon;
+  final String foodName;
+  final double price;
+
+  const FoodCard({
+    super.key,
+    required this.foodIcon,
+    required this.foodName,
+    required this.price,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+
+        child: Row(
+          children: [
+            // ================= FOOD ICON =================
+
+            Container(
+              width: 80,
+              height: 80,
+
+              decoration: BoxDecoration(
+                color: Colors.orange.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+
+              child: Icon(
+                foodIcon,
+                size: 50,
+                color: Colors.orange,
+              ),
+            ),
+
+            const SizedBox(width: 16),
+
+            // ================= FOOD DETAILS =================
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    foodName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    '₹${price.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // ================= ADD TO CART =================
+
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '$foodName added to cart!',
+                          ),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+
+                    icon: const Icon(
+                      Icons.add_shopping_cart,
+                    ),
+
+                    label: const Text(
+                      'ADD TO CART',
+                    ),
+
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
