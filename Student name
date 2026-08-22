@@ -1,0 +1,287 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+// ================= MAIN APP =================
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Student Information',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const StudentScreen(),
+    );
+  }
+}
+
+// ================= CUSTOM STUDENT CARD =================
+
+class StudentCard extends StatelessWidget {
+  final String name;
+  final String branch;
+  final String cgpa;
+
+  const StudentCard({
+    super.key,
+    required this.name,
+    required this.branch,
+    required this.cgpa,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 10,
+      ),
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            // Student Icon
+            const CircleAvatar(
+              radius: 30,
+              backgroundColor: Color(0xff727577),
+              child: Icon(
+                Icons.person,
+                size: 35,
+                color: Colors.white,
+              ),
+            ),
+
+            const SizedBox(width: 20),
+
+            // Student Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    'Branch: $branch',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+
+                  Text(
+                    'CGPA: $cgpa',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ================= STUDENT SCREEN =================
+
+class StudentScreen extends StatefulWidget {
+  const StudentScreen({super.key});
+
+  @override
+  State<StudentScreen> createState() => _StudentScreenState();
+}
+
+class _StudentScreenState extends State<StudentScreen> {
+  // ================= TEXT CONTROLLERS =================
+
+  final TextEditingController nameController =
+      TextEditingController();
+
+  final TextEditingController branchController =
+      TextEditingController();
+
+  final TextEditingController cgpaController =
+      TextEditingController();
+
+  // ================= STUDENT LIST =================
+
+  final List<Map<String, String>> students = [];
+
+  // ================= ADD STUDENT =================
+
+  void addStudent() {
+    if (nameController.text.trim().isNotEmpty &&
+        branchController.text.trim().isNotEmpty &&
+        cgpaController.text.trim().isNotEmpty) {
+      setState(() {
+        students.add({
+          'name': nameController.text.trim(),
+          'branch': branchController.text.trim(),
+          'cgpa': cgpaController.text.trim(),
+        });
+      });
+
+      // Clear text fields
+      nameController.clear();
+      branchController.clear();
+      cgpaController.clear();
+
+      // Hide keyboard
+      FocusScope.of(context).unfocus();
+    } else {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all fields'),
+        ),
+      );
+    }
+  }
+
+  // ================= DISPOSE CONTROLLERS =================
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    branchController.dispose();
+    cgpaController.dispose();
+
+    super.dispose();
+  }
+
+  // ================= BUILD =================
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // ================= APP BAR =================
+
+      appBar: AppBar(
+        title: const Text(
+          'Student Information',
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xffa4d1f6),
+      ),
+
+      // ================= BODY =================
+
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+
+          // ================= NAME =================
+
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+            ),
+            child: TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: 'Student Name',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.person),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // ================= BRANCH =================
+
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+            ),
+            child: TextField(
+              controller: branchController,
+              decoration: const InputDecoration(
+                labelText: 'Branch',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.school),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // ================= CGPA =================
+
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+            ),
+            child: TextField(
+              controller: cgpaController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: const InputDecoration(
+                labelText: 'CGPA',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.grade),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // ================= ADD BUTTON =================
+
+          ElevatedButton(
+            onPressed: addStudent,
+            child: const Text(
+              'ADD STUDENT',
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // ================= DISPLAY STUDENTS =================
+
+          Expanded(
+            child: students.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No students added yet',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: students.length,
+                    itemBuilder: (context, index) {
+                      return StudentCard(
+                        name: students[index]['name']!,
+                        branch: students[index]['branch']!,
+                        cgpa: students[index]['cgpa']!,
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
