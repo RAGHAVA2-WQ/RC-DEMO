@@ -1,0 +1,122 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+
+      // Starting screen
+      initialRoute: '/',
+
+      // Named routes
+      routes: {
+        '/': (context) => HomeScreen(),
+        '/second': (context) => SecondScreen(),
+        '/third': (context) => ThirdScreen(),
+      },
+    );
+  }
+}
+
+// ---------------- HOME SCREEN ----------------
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home Screen'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            // Go to Second Screen
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/second');
+              },
+              child: Text('Go to Second Screen'),
+            ),
+
+            SizedBox(height: 20),
+
+            // Go to Third Screen
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/third');
+              },
+              child: Text('Go to Third Screen'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------- SECOND SCREEN ----------------
+class SecondScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Second Screen'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Go Back'),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------- THIRD SCREEN ----------------
+class ThirdScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Third Screen'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            // Go Back
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Go Back'),
+            ),
+
+            SizedBox(height: 20),
+
+            // Go to Home and clear stack
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/',
+                  (route) => false,
+                );
+              },
+              child: Text('Go to Home'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
